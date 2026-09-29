@@ -26,7 +26,15 @@ import com.antiscroll.app.service.common.fillsScreen
  *   from the Explore grid) by matching the actual full-screen Reels player content.
  *
  * Both funnel through [claim] so only one Back is ever sent per real entry, even though
- * both signals can independently notice the same Reels entry.
+ * both signals can independently notice the same Reels entry. Re-arming after a claim is
+ * handled only by [claim]'s own safety-net timer, not by [onContentChanged] observing a
+ * "not Reels" reading - a single content-changed event during a still-playing close
+ * animation can transiently read false before the screen has actually settled, and
+ * releasing on that reading re-arms the guard early enough for the very next (still part
+ * of the same transition, not a new tap) match to trigger a second, spurious Back. That
+ * extra Back doesn't visibly exit Instagram (it takes three Backs in a row to actually
+ * leave the app), so this was easy to miss, but it's the same underlying bug this guard
+ * shares with YouTube's - just masked by Instagram's deeper back stack rather than fixed.
  */
 internal class InstagramGuard(
     private val service: AccessibilityService,
@@ -54,26 +62,19 @@ internal class InstagramGuard(
             release()
             return
         }
-        if (isReelsScreen(root)) {
-            if (claim()) {
-                Log.d(TAG, "Blocking Reels (content match)")
-                service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
-            }
-        } else {
-            release()
+        if (isReelsScreen(root) && claim()) {
+            Log.d(TAG, "Blocking Reels (content match)")
+            service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
         }
     }
 
     /**
      * Claims the block for a fresh entry, returning false if one is already in progress
-     * (from either signal above) so only one Back is ever sent. Also arms a safety-net
-     * release after [BLOCK_RESET_TIMEOUT_MS]: relying only on [onContentChanged] later
-     * observing "not blocked" to release the claim isn't reliable enough on its own - a
-     * static screen (e.g. sitting on the Explore grid, which has no content signal of its
-     * own at all) may not keep sending content-changed events, so that release could
-     * simply never come, permanently blocking any further taps from working. The
-     * generation counter stops a stale safety-net release (from an older claim) from
-     * firing after a newer claim has already started.
+     * (from either signal above) so only one Back is ever sent. Re-arms after a fixed
+     * [BLOCK_RESET_TIMEOUT_MS] regardless of what the detector reports in the meantime -
+     * see the class doc for why re-arming on a detector reading is unsafe. The generation
+     * counter stops a stale release (from an older claim) from firing after a newer claim
+     * has already started.
      */
     private fun claim(): Boolean {
         if (blocked) return false
@@ -121,6 +122,6 @@ internal class InstagramGuard(
         private const val REELS_VIEWER_ID = "clips_viewer_view_pager"
         private val TAB_LABELS = setOf("Reels", "Explore", "Search and explore", "Search")
         private const val TAP_REVERSE_DELAY_MS = 250L
-        private const val BLOCK_RESET_TIMEOUT_MS = 1200L
+        private const val BLOCK_RESET_TIMEOUT_MS = 1500L
     }
 }
