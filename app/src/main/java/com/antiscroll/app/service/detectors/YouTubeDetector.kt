@@ -3,19 +3,17 @@ package com.antiscroll.app.service.detectors
 import android.view.accessibility.AccessibilityNodeInfo
 
 /**
- * Heuristic matching against YouTube's view tree. YouTube changes resource IDs across
- * releases, so this matches on several independent signals rather than one exact ID -
- * expect to need adjustments here after real-device testing.
+ * Heuristic matching against YouTube's view tree, used to catch Shorts entered without
+ * tapping the bottom-nav tab (e.g. a Shorts thumbnail on the Home feed) - tapping the tab
+ * itself is instead caught as a one-shot click event in GuardAccessibilityService, since a
+ * tab's "selected" state stays true long after its content is gone and isn't a safe signal
+ * to poll here.
  *
- * - contentDescription "Shorts" on a selected node matches the bottom-nav Shorts tab
- *   being active - this is the signal that actually caught the tab in testing.
  * - "reel" is YouTube's internal codename for Shorts (ReelWatchFragment,
  *   reel_player_page_container, reel_recycler, etc.) and "Remix" is a Shorts-only action -
- *   both fire regardless of how the player was opened (tab, a shared link, search).
- * - any other "shorts"-named node only counts if it actually fills the screen. This is
- *   what catches Shorts opened from a Home-feed shelf thumbnail (which doesn't select the
- *   Shorts tab and may not use "reel" naming) without also matching the small shelf
- *   preview that legitimately sits on the Home feed.
+ *   both fire regardless of how the player was opened.
+ * - any other "shorts"-named node only counts if it actually fills the screen, so this
+ *   doesn't also match the small Shorts preview shelf that legitimately sits on Home.
  */
 object YouTubeDetector {
 
@@ -26,8 +24,7 @@ object YouTubeDetector {
 
             val definiteMatch = id.contains("reel", ignoreCase = true) ||
                 id.contains("shorts_player", ignoreCase = true) ||
-                desc.contains("Remix", ignoreCase = true) ||
-                (node.isSelected && (id.contains("shorts", ignoreCase = true) || desc.equals("Shorts", ignoreCase = true)))
+                desc.contains("Remix", ignoreCase = true)
 
             if (definiteMatch) {
                 true
