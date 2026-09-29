@@ -57,8 +57,9 @@ got there — I hope this helps you the way it's helped me.
 
 Then, to get it onto your phone:
 
-1. **Get the APK onto your phone** — download it directly on the phone, or transfer the
-   `.apk` file over from wherever you built or received it.
+1. **[Download the APK](https://github.com/Skream18/Anti-Scroll/releases/download/v1.0.0/AntiScroll-v1.0.0.apk)**
+   directly on your phone, or transfer the `.apk` file over from wherever you built or
+   received it. (Other versions: [GitHub Releases](https://github.com/Skream18/Anti-Scroll/releases).)
 2. **Allow installing from this source.** When you open the file, Android will ask to
    allow installs from whichever app you opened it with (Files, your browser, etc.) — allow
    it, then continue the install.
