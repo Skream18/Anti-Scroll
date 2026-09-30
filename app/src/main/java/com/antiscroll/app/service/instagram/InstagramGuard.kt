@@ -29,7 +29,10 @@ import com.antiscroll.app.service.common.fillsScreen
  *   reverses it with a single Back. This is the only signal for Explore, which has no
  *   equivalent "player" content to detect the other way.
  * - [onContentChanged]: catches Reels entered without tapping the tab (e.g. a Reel opened
- *   from the Explore grid) by matching the actual full-screen Reels player content.
+ *   from the Explore grid) by matching the actual full-screen Reels player content. This is
+ *   also where the one exception lives: a Reel a friend shared in a DM or group chat is
+ *   allowed to play (see [isDmSharedReel]), but scrolling from it into the regular
+ *   algorithmic feed is blocked exactly as normal.
  *
  * Stories has no bottom-nav tab at all (it's opened by tapping a profile's story ring), so
  * it's detected purely by content match in [onContentChanged], the same way a
@@ -74,9 +77,17 @@ internal class InstagramGuard(
     fun onContentChanged(root: AccessibilityNodeInfo) {
         if (!settings.blockInstagramReelsExplore) {
             release()
-        } else if (isReelsScreen(root) && claim()) {
-            Log.d(TAG, "Blocking Reels (content match)")
-            service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
+        } else if (isReelsScreen(root)) {
+            if (isDmSharedReel(root)) {
+                // A friend shared this one specific Reel in a DM/group - let it play. The
+                // moment the user scrolls past it into the algorithmic continuation, this
+                // chrome disappears and isDmSharedReel() stops matching on its own, so
+                // blocking resumes with no extra "how many reels seen" tracking needed.
+                release()
+            } else if (claim()) {
+                Log.d(TAG, "Blocking Reels (content match)")
+                service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
+            }
         }
 
         if (!settings.blockInstagramStories) {
@@ -160,6 +171,24 @@ internal class InstagramGuard(
     }
 
     /**
+     * True if the Reels player currently on screen is showing the one specific Reel a
+     * friend shared in a DM or group chat, rather than the main Reels tab or Explore.
+     * Instagram overlays a "sent by <name>, <time>" header and a reply text box on top of
+     * a message-shared Reel for as long as you're still on it - chrome that doesn't exist
+     * on the regular Reels tab. `suggested_title` is Instagram's own label for its "you
+     * might also like" algorithmic carousel, forbidden here so that surface can never
+     * accidentally qualify. All four IDs are confirmed from Scrolless, same as the player
+     * ID above, rather than guessed.
+     */
+    private fun isDmSharedReel(root: AccessibilityNodeInfo): Boolean {
+        fun hasVisibleId(idSuffix: String) = root.anyDescendant { node ->
+            node.viewIdResourceName.orEmpty().endsWith(idSuffix, ignoreCase = true) && node.isVisibleToUser
+        }
+        if (hasVisibleId(SUGGESTED_TITLE_ID)) return false
+        return DM_REQUIRED_IDS.all { hasVisibleId(it) }
+    }
+
+    /**
      * `reel_viewer_root` is the actual, confirmed resource ID Instagram uses for the
      * full-screen Stories viewer - also taken from Scrolless, which documents it as a
      * distinct ID from the Reels player above. Matched alone, with no broader substring
@@ -179,6 +208,12 @@ internal class InstagramGuard(
         private const val TAG = "AntiScroll-Instagram"
         private const val REELS_VIEWER_ID = "clips_viewer_view_pager"
         private const val STORIES_VIEWER_ID = "reel_viewer_root"
+        private val DM_REQUIRED_IDS = setOf(
+            "sender_username_or_fullname",
+            "sender_timestamp",
+            "reply_bar_edittext",
+        )
+        private const val SUGGESTED_TITLE_ID = "suggested_title"
         private val TAB_LABELS = setOf("Reels", "Explore", "Search and explore", "Search")
         private const val TAP_REVERSE_DELAY_MS = 250L
         private const val BLOCK_RESET_TIMEOUT_MS = 1500L
