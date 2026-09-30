@@ -31,6 +31,8 @@ fun HomeScreen(
     onToggleBlockYoutubeShorts: (Boolean) -> Unit,
     blockInstagramReelsExplore: Boolean,
     onToggleBlockInstagramReelsExplore: (Boolean) -> Unit,
+    blockInstagramStories: Boolean,
+    onToggleBlockInstagramStories: (Boolean) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -74,6 +76,12 @@ fun HomeScreen(
             title = "Block Instagram Reels & Explore",
             checked = blockInstagramReelsExplore,
             onCheckedChange = onToggleBlockInstagramReelsExplore,
+            modifier = Modifier.padding(top = 8.dp),
+        )
+        ToggleRow(
+            title = "Block Instagram Stories",
+            checked = blockInstagramStories,
+            onCheckedChange = onToggleBlockInstagramStories,
             modifier = Modifier.padding(top = 8.dp),
         )
     }

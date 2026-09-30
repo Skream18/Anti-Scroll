@@ -5,8 +5,9 @@
 **Turns off the infinite scroll, leaves everything else alone.**
 
 Blocks YouTube Shorts and Instagram Reels/Explore at the source — no Shorts tab, no Reels
-tab, no Explore page to fall into. Long-form videos and your DMs still work exactly as
-before. Runs entirely on your phone: no account, no server, no network access at all.
+tab, no Explore page to fall into. Stories can be blocked too, as its own separate switch.
+Long-form videos and your DMs still work exactly as before. Runs entirely on your phone: no
+account, no server, no network access at all.
 
 <br>
 
@@ -35,16 +36,23 @@ got there — I hope this helps you the way it's helped me.
 
 - 🚫 **Blocks YouTube Shorts** — however you try to open it: the bottom-nav Shorts tab, or
   a Short thumbnail sitting on the Home feed. Either way, you get bounced straight back.
-- 🚫 **Blocks Instagram Reels & Explore** — same deal for both of those tabs.
-- 💬 **Long-form videos and friends still get through** — this only shuts off the
-  infinite-scroll feeds. Regular YouTube videos play normally, and Instagram DMs are
-  completely untouched, so you can still watch something you actually chose and keep up
-  with people — you just can't fall into the scroll on the way there.
-- 🔛 **One switch each, on or off whenever you want** — YouTube and Instagram blocking are
-  independent toggles in the app. Genuinely need Reels for something one day? Flip it off,
-  do what you need, flip it back on.
+- 🚫 **Blocks Instagram Reels & Explore** — same deal for both of those tabs, as one
+  switch.
+- 📵 **Blocks Instagram Stories too — as its own separate switch.** Off by default, since
+  plenty of people want Reels/Explore gone but still want to see Stories. Turn it on
+  independently if you want those gone as well.
+- 💬 **Long-form videos and friends still get through** — none of this touches anything
+  else. Regular YouTube videos play normally, and Instagram DMs are completely untouched,
+  so you can still watch something you actually chose and keep up with people — you just
+  can't fall into the scroll on the way there.
+- 🔛 **A switch for each block, on or off whenever you want** — YouTube Shorts, Instagram
+  Reels/Explore, and Instagram Stories are three fully independent toggles. Genuinely need
+  one of them for something one day? Flip it off, do what you need, flip it back on.
 - 📴 **Fully offline, on-device** — no account, no backend, no network permission in the
   app at all. Nothing that happens in either app is seen, logged, or sent anywhere.
+
+**More features are coming** — this is actively evolving as I keep using it myself and
+running into the next thing worth blocking (or the next thing that shouldn't have been).
 
 ## Download & install
 
@@ -57,7 +65,7 @@ got there — I hope this helps you the way it's helped me.
 
 Then, to get it onto your phone:
 
-1. **[Download the APK](https://github.com/Skream18/Anti-Scroll/releases/download/v1.0.0/AntiScroll-v1.0.0.apk)**
+1. **[Download the APK](https://github.com/Skream18/Anti-Scroll/releases/download/v1.1.0/AntiScroll-v1.1.0.apk)**
    directly on your phone, or transfer the `.apk` file over from wherever you built or
    received it. (Other versions: [GitHub Releases](https://github.com/Skream18/Anti-Scroll/releases).)
 2. **Allow installing from this source.** When you open the file, Android will ask to
@@ -69,8 +77,9 @@ Then, to get it onto your phone:
      settings" protection for apps installed outside the Play Store. Go to
      **Settings → Apps → AntiScroll → ⋮ menu → Allow restricted settings**, then try
      enabling the service again.
-4. Back in the app, the status card should turn green ("Service enabled"). Use the two
-   switches to turn YouTube and Instagram blocking on or off independently.
+4. Back in the app, the status card should turn green ("Service enabled"). Use the three
+   switches to turn YouTube Shorts, Instagram Reels/Explore, and Instagram Stories blocking
+   on or off independently.
 
 ## Building from source
 
@@ -105,11 +114,18 @@ things:
   event, since polling whether a tab is "currently selected" turns out to be unreliable
   (it can stay looking selected long after you've actually left).
 - **The blocked screen actually appearing on its own** — e.g. a Short opened from a
-  thumbnail on the Home feed rather than the tab. This matches known resource IDs
-  (`reel_player_page_container` for Shorts, `clips_viewer_view_pager` for Reels — both
-  taken from [Scrolless](https://github.com/duartebarbosadev/Scrolless), another
-  open-source accessibility blocker) filtered down to only nodes that are actually visible
-  and filling the screen right now, not a video pager's off-screen cached page.
+  thumbnail on the Home feed rather than the tab, or a Story (which has no tab at all —
+  it's opened by tapping a profile's story ring, so this is its only signal). This matches
+  known resource IDs (`reel_player_page_container` for Shorts, `clips_viewer_view_pager`
+  for Reels, `reel_viewer_root` for Stories — all taken from
+  [Scrolless](https://github.com/duartebarbosadev/Scrolless), another open-source
+  accessibility blocker) filtered down to only nodes that are actually visible and filling
+  the screen right now, not a video pager's off-screen cached page.
+
+Reels/Explore and Stories are two entirely independent blocks even though they're both
+Instagram - separate toggles, separate detection, separate internal state - specifically
+because an earlier, broader version of the Reels detector also matched Stories' resource ID
+by accident (both happen to contain "reel") and blocked them as an unwanted side effect.
 
 Either signal presses the system **Back** action once to leave the screen. Re-arming for
 the next attempt happens on a short fixed timer rather than waiting for the screen to

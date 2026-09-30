@@ -24,6 +24,7 @@ class MainActivity : ComponentActivity() {
             var serviceEnabled by mutableStateOf(isAccessibilityServiceEnabled())
             var blockYoutubeShorts by mutableStateOf(settings.blockYoutubeShorts)
             var blockInstagramReelsExplore by mutableStateOf(settings.blockInstagramReelsExplore)
+            var blockInstagramStories by mutableStateOf(settings.blockInstagramStories)
 
             LifecycleResumeEffect(Unit) {
                 serviceEnabled = isAccessibilityServiceEnabled()
@@ -45,6 +46,11 @@ class MainActivity : ComponentActivity() {
                     onToggleBlockInstagramReelsExplore = { enabled ->
                         settings.blockInstagramReelsExplore = enabled
                         blockInstagramReelsExplore = enabled
+                    },
+                    blockInstagramStories = blockInstagramStories,
+                    onToggleBlockInstagramStories = { enabled ->
+                        settings.blockInstagramStories = enabled
+                        blockInstagramStories = enabled
                     },
                 )
             }
