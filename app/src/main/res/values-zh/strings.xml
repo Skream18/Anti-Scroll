@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AntiScroll</string>
+    <string name="accessibility_service_description">监控 YouTube 和 Instagram，屏蔽 Shorts 和 Reels/探索页。</string>
+
+    <string name="home_tagline">屏蔽 Shorts。屏蔽 Reels。告别无限刷屏。</string>
+    <string name="home_status_enabled">服务已启用</string>
+    <string name="home_status_disabled">服务已停用</string>
+    <string name="home_status_description_enabled">AntiScroll 正在监控 YouTube 和 Instagram。</string>
+    <string name="home_status_description_disabled">开启无障碍服务以开始屏蔽。</string>
+    <string name="home_open_accessibility_settings">打开无障碍设置</string>
+    <string name="home_blocks_header">屏蔽项</string>
+    <string name="home_block_youtube_shorts">屏蔽 YouTube Shorts</string>
+    <string name="home_block_instagram_reels">屏蔽 Instagram Reels</string>
+    <string name="home_block_instagram_explore">屏蔽 Instagram 探索页</string>
+    <string name="home_block_instagram_stories">屏蔽 Instagram 快拍</string>
+
+    <string name="cd_settings">设置</string>
+    <string name="cd_back">返回</string>
+    <string name="cd_selected">已选择</string>
+
+    <string name="settings_title">设置</string>
+    <string name="settings_theme_header">主题</string>
+    <string name="settings_theme_dark">深色</string>
+    <string name="settings_theme_light">浅色</string>
+    <string name="settings_language_header">语言</string>
+    <string name="settings_language_system_default">系统默认</string>
+</resources>

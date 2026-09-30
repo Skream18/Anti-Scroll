@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AntiScroll</string>
+    <string name="accessibility_service_description">監察 YouTube 及 Instagram，封鎖 Shorts 同 Reels/探索頁。</string>
+
+    <string name="home_tagline">封鎖 Shorts。封鎖 Reels。唔再無限滑動。</string>
+    <string name="home_status_enabled">服務已啟用</string>
+    <string name="home_status_disabled">服務已停用</string>
+    <string name="home_status_description_enabled">AntiScroll 正在監察 YouTube 及 Instagram。</string>
+    <string name="home_status_description_disabled">開啟無障礙服務以開始封鎖。</string>
+    <string name="home_open_accessibility_settings">開啟無障礙設定</string>
+    <string name="home_blocks_header">封鎖項目</string>
+    <string name="home_block_youtube_shorts">封鎖 YouTube Shorts</string>
+    <string name="home_block_instagram_reels">封鎖 Instagram Reels</string>
+    <string name="home_block_instagram_explore">封鎖 Instagram 探索頁</string>
+    <string name="home_block_instagram_stories">封鎖 Instagram 限時動態</string>
+
+    <string name="cd_settings">設定</string>
+    <string name="cd_back">返回</string>
+    <string name="cd_selected">已選擇</string>
+
+    <string name="settings_title">設定</string>
+    <string name="settings_theme_header">主題</string>
+    <string name="settings_theme_dark">深色</string>
+    <string name="settings_theme_light">淺色</string>
+    <string name="settings_language_header">語言</string>
+    <string name="settings_language_system_default">系統預設</string>
+</resources>
