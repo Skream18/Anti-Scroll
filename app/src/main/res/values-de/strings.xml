@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AntiScroll</string>
+    <string name="accessibility_service_description">Beobachtet YouTube und Instagram, um Shorts und Reels/Explore zu blockieren.</string>
+
+    <string name="home_tagline">Shorts blockieren. Reels blockieren. Dem endlosen Scrollen ein Ende setzen.</string>
+    <string name="home_status_enabled">Dienst aktiviert</string>
+    <string name="home_status_disabled">Dienst deaktiviert</string>
+    <string name="home_status_description_enabled">AntiScroll beobachtet YouTube und Instagram.</string>
+    <string name="home_status_description_disabled">Aktiviere den Bedienungshilfen-Dienst, um mit dem Blockieren zu beginnen.</string>
+    <string name="home_open_accessibility_settings">Bedienungshilfen-Einstellungen öffnen</string>
+    <string name="home_blocks_header">BLOCKIERUNGEN</string>
+    <string name="home_block_youtube_shorts">YouTube Shorts blockieren</string>
+    <string name="home_block_instagram_reels">Instagram Reels blockieren</string>
+    <string name="home_block_instagram_explore">Instagram Explore blockieren</string>
+    <string name="home_block_instagram_stories">Instagram Stories blockieren</string>
+
+    <string name="cd_settings">Einstellungen</string>
+    <string name="cd_back">Zurück</string>
+    <string name="cd_selected">Ausgewählt</string>
+
+    <string name="settings_title">Einstellungen</string>
+    <string name="settings_theme_header">DESIGN</string>
+    <string name="settings_theme_dark">Dunkel</string>
+    <string name="settings_theme_light">Hell</string>
+    <string name="settings_language_header">SPRACHE</string>
+    <string name="settings_language_system_default">Systemsprache</string>
+</resources>

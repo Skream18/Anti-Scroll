@@ -1,5 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">AntiScroll</string>
-    <string name="accessibility_service_description">Watches YouTube and Instagram to block Shorts and the Reels/Explore tabs.</string>
+    <string name="accessibility_service_description">Watches YouTube and Instagram to block Shorts and Reels/Explore.</string>
+
+    <string name="home_tagline">Block Shorts. Block Reels. Keep scrolling out.</string>
+    <string name="home_status_enabled">Service enabled</string>
+    <string name="home_status_disabled">Service disabled</string>
+    <string name="home_status_description_enabled">AntiScroll is watching YouTube and Instagram.</string>
+    <string name="home_status_description_disabled">Turn on the accessibility service to start blocking.</string>
+    <string name="home_open_accessibility_settings">Open Accessibility Settings</string>
+    <string name="home_blocks_header">BLOCKS</string>
+    <string name="home_block_youtube_shorts">Block YouTube Shorts</string>
+    <string name="home_block_instagram_reels">Block Instagram Reels</string>
+    <string name="home_block_instagram_explore">Block Instagram Explore</string>
+    <string name="home_block_instagram_stories">Block Instagram Stories</string>
+
+    <string name="cd_settings">Settings</string>
+    <string name="cd_back">Back</string>
+    <string name="cd_selected">Selected</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_theme_header">THEME</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_language_header">LANGUAGE</string>
+    <string name="settings_language_system_default">System default</string>
 </resources>
