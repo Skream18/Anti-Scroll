@@ -41,10 +41,7 @@ got there — I hope this helps you the way it's helped me.
 - 📵 **Blocks Instagram Stories too — as its own separate switch.** Off by default, since
   plenty of people want Reels/Explore gone but still want to see Stories. Turn it on
   independently if you want those gone as well.
-- 💬 **Long-form videos and friends still get through** — none of this touches anything
-  else. Regular YouTube videos play normally, and Instagram DMs are completely untouched,
-  so you can still watch something you actually chose and keep up with people — you just
-  can't fall into the scroll on the way there.
+- 💬 **Long-form videos and friends still get through** — none of this touches anything else. Regular YouTube videos play normally, and Instagram DMs are completely untouched...for now.
 - 🔛 **A switch for each block, on or off whenever you want** — YouTube Shorts, Instagram
   Reels/Explore, and Instagram Stories are three fully independent toggles. Genuinely need
   one of them for something one day? Flip it off, do what you need, flip it back on.
