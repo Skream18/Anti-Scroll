@@ -5,8 +5,6 @@ import android.os.Handler
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import android.widget.Toast
-import com.antiscroll.app.R
 import com.antiscroll.app.data.SettingsStore
 import com.antiscroll.app.service.common.anyDescendant
 import com.antiscroll.app.service.common.fillsScreen
@@ -14,31 +12,31 @@ import com.antiscroll.app.service.common.fillsScreen
 /**
  * Everything about blocking Instagram Reels, Explore, and (optionally) Stories lives in
  * this one file: detection rules, tap/content handling, and all of its own state. Nothing
- * here is shared with YouTube's or Snapchat's guards (their own packages) - each is fully
- * independent, so a bug or a tuning change on one side can never affect the others.
+ * here is shared with YouTube's guard (YouTubeGuard, in its own package) - each is fully
+ * independent, so a bug or a tuning change on one side can never affect the other.
  *
- * Reels, Explore, and Stories are three entirely separate, independently toggleable blocks
+ * Reels/Explore and Stories are two entirely separate, independently toggleable blocks
  * inside this same guard - separate settings, separate claim/release state
- * ([blocked]/[generation] for Reels, [exploreBlocked]/[exploreGeneration] for Explore,
- * [storiesBlocked]/[storiesGeneration] for Stories), separate detection functions. They
- * live in one file because they share the same Instagram event stream, but none of their
- * state can affect the others'.
+ * ([blocked]/[generation] vs [storiesBlocked]/[storiesGeneration]), separate detection
+ * functions. They live in one file because they share the same Instagram event stream, but
+ * neither's state can affect the other's.
  *
- * Two independent signals feed the Reels blocking decision:
- * - [onTabTapped]: the bottom-nav Reels tab stays visually "selected" long after Back
- *   leaves its content, so polling that state is unsafe (it never reads false again). A
- *   click event is a genuine one-shot signal instead - it fires exactly once per real tap -
- *   so this catches the tap itself, waits briefly for the app to navigate, then reverses it
- *   with a single Back. The same tap-based approach covers Explore too, independently.
+ * Two independent signals feed the Reels/Explore blocking decision:
+ * - [onTabTapped]: the bottom-nav Reels/Explore tabs stay visually "selected" long after
+ *   Back leaves their content, so polling that state is unsafe (it never reads false
+ *   again). A click event is a genuine one-shot signal instead - it fires exactly once per
+ *   real tap - so this catches the tap itself, waits briefly for the app to navigate, then
+ *   reverses it with a single Back. This is the only signal for Explore, which has no
+ *   equivalent "player" content to detect the other way.
  * - [onContentChanged]: catches Reels entered without tapping the tab (e.g. a Reel opened
  *   from the Explore grid) by matching the actual full-screen Reels player content. This is
  *   also where the one exception lives: a Reel a friend shared in a DM or group chat is
  *   allowed to play (see [isDmSharedReel]), but scrolling from it into the regular
  *   algorithmic feed is blocked exactly as normal.
  *
- * Explore and Stories have no content signal of their own (Explore is a browsable grid, not
- * a player; Stories is covered separately below) - Explore is caught purely by its tab tap,
- * Stories purely by content match, the same way a thumbnail-opened Reel is.
+ * Stories has no bottom-nav tab at all (it's opened by tapping a profile's story ring), so
+ * it's detected purely by content match in [onContentChanged], the same way a
+ * thumbnail-opened Reel is.
  *
  * Both Reels signals funnel through [claim] so only one Back is ever sent per real Reels
  * entry, even though both signals can independently notice the same one. Re-arming after a
@@ -50,18 +48,7 @@ import com.antiscroll.app.service.common.fillsScreen
  * extra Back doesn't visibly exit Instagram (it takes three Backs in a row to actually
  * leave the app), so this was easy to miss, but it's the same underlying bug this guard
  * shares with YouTube's - just masked by Instagram's deeper back stack rather than fixed.
- * [claimExplore] and [claimStories] follow the identical pattern for their own blocks.
- *
- * Scroll Control ([handleScrollControl]) is a fourth, independent mode that only ever
- * engages when [SettingsStore.blockInstagramReels] is off - full block always wins. Instead
- * of blocking every entry, it lets Reels play for a configurable time budget
- * ([SettingsStore.scrollControlRemainingMillis], a *pausable* duration ticked down only
- * while a real Reels screen is on screen), then sends the user home and starts a
- * non-pausable cooldown deadline ([SettingsStore.scrollControlCooldownUntil]) during which
- * re-entering Reels is blocked exactly like full block. It has its own state
- * ([scrollControlTicking]/[scrollControlGeneration] for the tick loop,
- * [cooldownBlocked]/[cooldownGeneration] for the cooldown block-once-per-entry claim) so it
- * can never interact with the full-block state above.
+ * [claimStories] follows the identical pattern for Stories.
  */
 internal class InstagramGuard(
     private val service: AccessibilityService,
@@ -72,47 +59,25 @@ internal class InstagramGuard(
     private var blocked = false
     private var generation = 0
 
-    private var exploreBlocked = false
-    private var exploreGeneration = 0
-
     private var storiesBlocked = false
     private var storiesGeneration = 0
 
-    private var scrollControlTicking = false
-    private var scrollControlGeneration = 0
-
-    private var cooldownBlocked = false
-    private var cooldownGeneration = 0
-
     fun onTabTapped(event: AccessibilityEvent) {
+        if (!settings.blockInstagramReelsExplore) return
         val desc = event.contentDescription?.toString() ?: return
+        if (TAB_LABELS.none { desc.equals(it, ignoreCase = true) }) return
+        if (!claim()) return
 
-        if (settings.blockInstagramReels && desc.equals(REELS_TAB_LABEL, ignoreCase = true) && claim()) {
-            handler.postDelayed({
-                Log.d(TAG, "Reversing tap on Reels tab")
-                service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
-            }, TAP_REVERSE_DELAY_MS)
-            return
-        }
-
-        if (settings.blockInstagramExplore &&
-            EXPLORE_TAB_LABELS.any { desc.equals(it, ignoreCase = true) } &&
-            claimExplore()
-        ) {
-            handler.postDelayed({
-                Log.d(TAG, "Reversing tap on Explore tab")
-                service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
-            }, TAP_REVERSE_DELAY_MS)
-        }
+        handler.postDelayed({
+            Log.d(TAG, "Reversing tap on blocked tab: $desc")
+            service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
+        }, TAP_REVERSE_DELAY_MS)
     }
 
     fun onContentChanged(root: AccessibilityNodeInfo) {
-        if (!settings.blockInstagramReels) {
+        if (!settings.blockInstagramReelsExplore) {
             release()
-            handleScrollControl(root)
         } else if (isReelsScreen(root)) {
-            stopScrollControlTicking()
-            releaseCooldown()
             if (isDmSharedReel(root)) {
                 // A friend shared this one specific Reel in a DM/group - let it play. The
                 // moment the user scrolls past it into the algorithmic continuation, this
@@ -123,9 +88,6 @@ internal class InstagramGuard(
                 Log.d(TAG, "Blocking Reels (content match)")
                 service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
             }
-        } else {
-            stopScrollControlTicking()
-            releaseCooldown()
         }
 
         if (!settings.blockInstagramStories) {
@@ -163,18 +125,6 @@ internal class InstagramGuard(
     }
 
     /** Same pattern as [claim], entirely separate state - see the class doc. */
-    private fun claimExplore(): Boolean {
-        if (exploreBlocked) return false
-        exploreBlocked = true
-        exploreGeneration++
-        val myGeneration = exploreGeneration
-        handler.postDelayed({
-            if (exploreGeneration == myGeneration) exploreBlocked = false
-        }, BLOCK_RESET_TIMEOUT_MS)
-        return true
-    }
-
-    /** Same pattern as [claim], entirely separate state - see the class doc. */
     private fun claimStories(): Boolean {
         if (storiesBlocked) return false
         storiesBlocked = true
@@ -191,139 +141,6 @@ internal class InstagramGuard(
             storiesBlocked = false
             storiesGeneration++
         }
-    }
-
-    /**
-     * Only reached when [SettingsStore.blockInstagramReels] is off. Scroll Control has
-     * three mutually exclusive states, checked in this order:
-     *  1. [SettingsStore.scrollControlEnabled] is off -> fully disengaged.
-     *  2. [SettingsStore.scrollControlCooldownUntil] is in the future -> behaves exactly
-     *     like full block (immediate Back on Reels, DM-shared exception still honored) via
-     *     [claimCooldown]/[releaseCooldown].
-     *  3. Otherwise -> normal budget mode: start/keep the tick loop while a real (non-DM)
-     *     Reels screen is on screen. [onScrollControlTick] is the only place
-     *     [SettingsStore.scrollControlRemainingMillis] is decremented and the only place a
-     *     new cooldown is armed.
-     */
-    private fun handleScrollControl(root: AccessibilityNodeInfo) {
-        if (!settings.scrollControlEnabled) {
-            stopScrollControlTicking()
-            releaseCooldown()
-            return
-        }
-
-        val now = System.currentTimeMillis()
-        val cooldownUntil = settings.scrollControlCooldownUntil
-
-        if (cooldownUntil != 0L && now < cooldownUntil) {
-            stopScrollControlTicking()
-            if (isReelsScreen(root) && !isDmSharedReel(root)) {
-                if (claimCooldown()) {
-                    Log.d(TAG, "Blocking Reels (Scroll Control cooldown)")
-                    service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
-                }
-            } else {
-                releaseCooldown()
-            }
-            return
-        }
-
-        if (cooldownUntil != 0L) {
-            // Cooldown just expired: refill the budget, lazily, on first observation after expiry.
-            settings.scrollControlCooldownUntil = 0L
-            settings.scrollControlRemainingMillis = settings.scrollControlLimitMinutes * 60_000L
-        }
-        releaseCooldown()
-
-        if (isReelsScreen(root) && !isDmSharedReel(root)) {
-            startScrollControlTickingIfNeeded()
-        } else {
-            stopScrollControlTicking()
-        }
-    }
-
-    /** Same pattern as [claim], entirely separate state - blocks re-entry during a Scroll Control cooldown. */
-    private fun claimCooldown(): Boolean {
-        if (cooldownBlocked) return false
-        cooldownBlocked = true
-        cooldownGeneration++
-        val myGeneration = cooldownGeneration
-        handler.postDelayed({
-            if (cooldownGeneration == myGeneration) cooldownBlocked = false
-        }, BLOCK_RESET_TIMEOUT_MS)
-        return true
-    }
-
-    private fun releaseCooldown() {
-        if (cooldownBlocked) {
-            cooldownBlocked = false
-            cooldownGeneration++
-        }
-    }
-
-    private fun startScrollControlTickingIfNeeded() {
-        if (scrollControlTicking) return
-        scrollControlTicking = true
-        scrollControlGeneration++
-        if (settings.scrollControlRemainingMillis < 0L) {
-            settings.scrollControlRemainingMillis = settings.scrollControlLimitMinutes * 60_000L
-        }
-        scheduleScrollControlTick(scrollControlGeneration)
-    }
-
-    private fun stopScrollControlTicking() {
-        if (scrollControlTicking) {
-            scrollControlTicking = false
-            scrollControlGeneration++ // invalidates any pending scheduled tick
-        }
-    }
-
-    private fun scheduleScrollControlTick(myGeneration: Int) {
-        handler.postDelayed({ onScrollControlTick(myGeneration) }, SCROLL_CONTROL_TICK_MS)
-    }
-
-    /**
-     * Re-checks the live foreground state itself instead of trusting that [onContentChanged]
-     * will keep calling in - once started, this loop runs on wall-clock time regardless of
-     * whether new accessibility events arrive (e.g. the user has left Instagram entirely).
-     * That self-check is what stops the budget draining in the background.
-     */
-    private fun onScrollControlTick(myGeneration: Int) {
-        if (myGeneration != scrollControlGeneration) return // superseded/stopped
-
-        if (!settings.scrollControlEnabled || settings.blockInstagramReels) {
-            stopScrollControlTicking()
-            return
-        }
-
-        val root = service.rootInActiveWindow
-        val stillOnReels = root != null &&
-            root.packageName?.toString() == PACKAGE_NAME &&
-            isReelsScreen(root) &&
-            !isDmSharedReel(root)
-
-        if (!stillOnReels) {
-            stopScrollControlTicking()
-            return
-        }
-
-        val remaining = settings.scrollControlRemainingMillis - SCROLL_CONTROL_TICK_MS
-        if (remaining <= 0L) {
-            settings.scrollControlRemainingMillis = 0L
-            settings.scrollControlCooldownUntil = System.currentTimeMillis() + SCROLL_CONTROL_COOLDOWN_MS
-            stopScrollControlTicking()
-            service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
-            Toast.makeText(
-                service.applicationContext,
-                service.getString(R.string.scroll_control_times_up_toast),
-                Toast.LENGTH_LONG,
-            ).show()
-            Log.d(TAG, "Scroll Control budget exhausted, sending home + starting cooldown")
-            return
-        }
-
-        settings.scrollControlRemainingMillis = remaining
-        scheduleScrollControlTick(myGeneration)
     }
 
     /**
@@ -397,11 +214,8 @@ internal class InstagramGuard(
             "reply_bar_edittext",
         )
         private const val SUGGESTED_TITLE_ID = "suggested_title"
-        private const val REELS_TAB_LABEL = "Reels"
-        private val EXPLORE_TAB_LABELS = setOf("Explore", "Search and explore", "Search")
+        private val TAB_LABELS = setOf("Reels", "Explore", "Search and explore", "Search")
         private const val TAP_REVERSE_DELAY_MS = 250L
         private const val BLOCK_RESET_TIMEOUT_MS = 1500L
-        private const val SCROLL_CONTROL_TICK_MS = 1_000L
-        private const val SCROLL_CONTROL_COOLDOWN_MS = 60_000L
     }
 }

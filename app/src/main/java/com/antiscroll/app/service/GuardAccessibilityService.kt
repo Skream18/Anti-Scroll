@@ -6,20 +6,18 @@ import android.os.Looper
 import android.view.accessibility.AccessibilityEvent
 import com.antiscroll.app.data.SettingsStore
 import com.antiscroll.app.service.instagram.InstagramGuard
-import com.antiscroll.app.service.snapchat.SnapchatGuard
 import com.antiscroll.app.service.youtube.YouTubeGuard
 
 /**
  * Thin dispatcher only: routes each accessibility event to the right app's guard by
- * package name. All actual detection and blocking logic lives in YouTubeGuard,
- * InstagramGuard, and SnapchatGuard, which are fully independent of each other - this class
- * holds no per-app state of its own.
+ * package name. All actual detection and blocking logic lives in YouTubeGuard and
+ * InstagramGuard, which are fully independent of each other - this class holds no
+ * per-app state of its own.
  */
 class GuardAccessibilityService : AccessibilityService() {
 
     private lateinit var youtubeGuard: YouTubeGuard
     private lateinit var instagramGuard: InstagramGuard
-    private lateinit var snapchatGuard: SnapchatGuard
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -27,7 +25,6 @@ class GuardAccessibilityService : AccessibilityService() {
         val handler = Handler(Looper.getMainLooper())
         youtubeGuard = YouTubeGuard(this, handler, settings)
         instagramGuard = InstagramGuard(this, handler, settings)
-        snapchatGuard = SnapchatGuard(this, handler, settings)
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
@@ -45,7 +42,6 @@ class GuardAccessibilityService : AccessibilityService() {
         when (pkg) {
             YouTubeGuard.PACKAGE_NAME -> youtubeGuard.onContentChanged(root)
             InstagramGuard.PACKAGE_NAME -> instagramGuard.onContentChanged(root)
-            SnapchatGuard.PACKAGE_NAME -> snapchatGuard.onContentChanged(root)
         }
     }
 
