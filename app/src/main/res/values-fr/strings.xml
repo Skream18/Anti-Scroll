@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AntiScroll</string>
+    <string name="accessibility_service_description">Surveille YouTube, Instagram et Snapchat pour bloquer les Shorts, Reels/Explorer et Spotlight.</string>
+
+    <string name="home_tagline">Bloque les Shorts. Bloque les Reels. Empêche le défilement infini.</string>
+    <string name="home_status_enabled">Service activé</string>
+    <string name="home_status_disabled">Service désactivé</string>
+    <string name="home_status_description_enabled">AntiScroll surveille YouTube, Instagram et Snapchat.</string>
+    <string name="home_status_description_disabled">Activez le service d\'accessibilité pour commencer le blocage.</string>
+    <string name="home_open_accessibility_settings">Ouvrir les paramètres d\'accessibilité</string>
+    <string name="home_blocks_header">BLOCAGES</string>
+    <string name="home_block_youtube_shorts">Bloquer YouTube Shorts</string>
+    <string name="home_block_instagram_reels">Bloquer Instagram Reels</string>
+    <string name="home_block_instagram_explore">Bloquer Instagram Explorer</string>
+    <string name="home_block_instagram_stories">Bloquer les stories Instagram</string>
+    <string name="home_block_snapchat_spotlight">Bloquer Snapchat Spotlight</string>
+    <string name="home_block_snapchat_stories">Bloquer les stories Snapchat</string>
+
+    <string name="cd_settings">Paramètres</string>
+    <string name="cd_back">Retour</string>
+    <string name="cd_selected">Sélectionné</string>
+
+    <string name="settings_title">Paramètres</string>
+    <string name="settings_theme_header">THÈME</string>
+    <string name="settings_theme_dark">Sombre</string>
+    <string name="settings_theme_light">Clair</string>
+    <string name="settings_language_header">LANGUE</string>
+    <string name="settings_language_system_default">Langue du système</string>
+
+    <string name="home_nav_label">Accueil</string>
+    <string name="scroll_control_nav_label">Contrôle du défilement</string>
+    <string name="scroll_control_title">Contrôle du défilement</string>
+    <string name="scroll_control_disabled_by_full_block">Les Reels sont entièrement bloqués dans Accueil — désactivez ce blocage pour utiliser un minuteur de défilement à la place.</string>
+    <string name="scroll_control_enable_toggle">Activer le contrôle du défilement</string>
+    <string name="scroll_control_limit_header">LIMITE DE TEMPS</string>
+    <string name="scroll_control_limit_1min">1 minute</string>
+    <string name="scroll_control_limit_3min">3 minutes</string>
+    <string name="scroll_control_limit_5min">5 minutes</string>
+    <string name="scroll_control_remaining_status">%1$s restantes</string>
+    <string name="scroll_control_cooldown_status">Pause en cours — %1$s restantes</string>
+    <string name="scroll_control_times_up_toast">Temps écoulé ! Faites une pause d\'une minute 💚</string>
+</resources>

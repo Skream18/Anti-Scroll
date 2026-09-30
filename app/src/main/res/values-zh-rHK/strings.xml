@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AntiScroll</string>
+    <string name="accessibility_service_description">監察 YouTube、Instagram 及 Snapchat，封鎖 Shorts、Reels/探索頁同 Spotlight。</string>
+
+    <string name="home_tagline">封鎖 Shorts。封鎖 Reels。唔再無限滑動。</string>
+    <string name="home_status_enabled">服務已啟用</string>
+    <string name="home_status_disabled">服務已停用</string>
+    <string name="home_status_description_enabled">AntiScroll 正在監察 YouTube、Instagram 及 Snapchat。</string>
+    <string name="home_status_description_disabled">開啟無障礙服務以開始封鎖。</string>
+    <string name="home_open_accessibility_settings">開啟無障礙設定</string>
+    <string name="home_blocks_header">封鎖項目</string>
+    <string name="home_block_youtube_shorts">封鎖 YouTube Shorts</string>
+    <string name="home_block_instagram_reels">封鎖 Instagram Reels</string>
+    <string name="home_block_instagram_explore">封鎖 Instagram 探索頁</string>
+    <string name="home_block_instagram_stories">封鎖 Instagram 限時動態</string>
+    <string name="home_block_snapchat_spotlight">封鎖 Snapchat Spotlight</string>
+    <string name="home_block_snapchat_stories">封鎖 Snapchat 限時動態</string>
+
+    <string name="cd_settings">設定</string>
+    <string name="cd_back">返回</string>
+    <string name="cd_selected">已選擇</string>
+
+    <string name="settings_title">設定</string>
+    <string name="settings_theme_header">主題</string>
+    <string name="settings_theme_dark">深色</string>
+    <string name="settings_theme_light">淺色</string>
+    <string name="settings_language_header">語言</string>
+    <string name="settings_language_system_default">系統預設</string>
+
+    <string name="home_nav_label">主頁</string>
+    <string name="scroll_control_nav_label">滑動控制</string>
+    <string name="scroll_control_title">滑動控制</string>
+    <string name="scroll_control_disabled_by_full_block">Reels 已喺主頁被完全封鎖 — 請關閉該封鎖以改用滑動計時器。</string>
+    <string name="scroll_control_enable_toggle">開啟滑動控制</string>
+    <string name="scroll_control_limit_header">時間限制</string>
+    <string name="scroll_control_limit_1min">1 分鐘</string>
+    <string name="scroll_control_limit_3min">3 分鐘</string>
+    <string name="scroll_control_limit_5min">5 分鐘</string>
+    <string name="scroll_control_remaining_status">仲剩 %1$s</string>
+    <string name="scroll_control_cooldown_status">冷卻中 — 仲剩 %1$s</string>
+    <string name="scroll_control_times_up_toast">時間到！休息返 1 分鐘 💚</string>
+</resources>

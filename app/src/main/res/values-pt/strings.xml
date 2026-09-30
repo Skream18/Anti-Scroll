@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AntiScroll</string>
+    <string name="accessibility_service_description">Observa o YouTube, o Instagram e o Snapchat para bloquear os Shorts, Reels/Explorar e o Spotlight.</string>
+
+    <string name="home_tagline">Bloqueia os Shorts. Bloqueia os Reels. Corta a rolagem infinita.</string>
+    <string name="home_status_enabled">Serviço ativado</string>
+    <string name="home_status_disabled">Serviço desativado</string>
+    <string name="home_status_description_enabled">O AntiScroll está observando o YouTube, o Instagram e o Snapchat.</string>
+    <string name="home_status_description_disabled">Ative o serviço de acessibilidade para começar a bloquear.</string>
+    <string name="home_open_accessibility_settings">Abrir configurações de acessibilidade</string>
+    <string name="home_blocks_header">BLOQUEIOS</string>
+    <string name="home_block_youtube_shorts">Bloquear YouTube Shorts</string>
+    <string name="home_block_instagram_reels">Bloquear Instagram Reels</string>
+    <string name="home_block_instagram_explore">Bloquear Instagram Explorar</string>
+    <string name="home_block_instagram_stories">Bloquear stories do Instagram</string>
+    <string name="home_block_snapchat_spotlight">Bloquear Snapchat Spotlight</string>
+    <string name="home_block_snapchat_stories">Bloquear stories do Snapchat</string>
+
+    <string name="cd_settings">Configurações</string>
+    <string name="cd_back">Voltar</string>
+    <string name="cd_selected">Selecionado</string>
+
+    <string name="settings_title">Configurações</string>
+    <string name="settings_theme_header">TEMA</string>
+    <string name="settings_theme_dark">Escuro</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_language_header">IDIOMA</string>
+    <string name="settings_language_system_default">Idioma do sistema</string>
+
+    <string name="home_nav_label">Início</string>
+    <string name="scroll_control_nav_label">Controle de rolagem</string>
+    <string name="scroll_control_title">Controle de rolagem</string>
+    <string name="scroll_control_disabled_by_full_block">Os Reels estão totalmente bloqueados em Início — desative isso para usar um temporizador de rolagem.</string>
+    <string name="scroll_control_enable_toggle">Ativar Controle de rolagem</string>
+    <string name="scroll_control_limit_header">LIMITE DE TEMPO</string>
+    <string name="scroll_control_limit_1min">1 minuto</string>
+    <string name="scroll_control_limit_3min">3 minutos</string>
+    <string name="scroll_control_limit_5min">5 minutos</string>
+    <string name="scroll_control_remaining_status">%1$s restantes</string>
+    <string name="scroll_control_cooldown_status">Em espera — %1$s restantes</string>
+    <string name="scroll_control_times_up_toast">Tempo esgotado! Faça uma pausa de 1 minuto 💚</string>
+</resources>
